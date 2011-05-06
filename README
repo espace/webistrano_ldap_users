@@ -23,11 +23,17 @@ After installing the plugin:
 
 	>>vi config/webistrano_config.rb
 
-and set the follwing 3 parameters by your LDAP server corresponding values:
-		
-	:ldap_host => "192.168.0.5",
-	:ldap_port => 389,
-	:ldap_base => "ou=people,dc=example,dc=com",
+and set the follwing 6 parameters by your LDAP server corresponding values:
+
+	  :ldap_host => "192.168.0.5",
+	  :ldap_port => 389,
+	  :ldap_base => "ou=people,dc=example,dc=com",
+	  :ldap_method => :simple, #either :simple or :anonymous. If you choose :anonymous then you can keep username/password empty ''
+	  :ldap_username =>'cn=admin,dc=exampl,dc=com' ,
+	  :ldap_password =>'password',
+
+
+
 
 
 ===========================================================================

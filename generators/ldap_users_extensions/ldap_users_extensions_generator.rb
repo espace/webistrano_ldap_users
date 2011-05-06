@@ -15,26 +15,30 @@ class LdapUsersExtensionsGenerator < Rails::Generator::Base
         "#{match}\n
 	attr_accessible :ldap_cn\n
 	def self.retrieve_from_ldap(login)\n
-		ldap = Net::LDAP.new  :host => WebistranoConfig[:ldap_host], :port => WebistranoConfig[:ldap_port], :base => WebistranoConfig[:ldap_base]\n
+		auth = { :method =>  WebistranoConfig[:ldap_method], :username =>  WebistranoConfig[:ldap_username], :password =>  WebistranoConfig[:ldap_password] }\n
+		ldap = Net::LDAP.new  :host => WebistranoConfig[:ldap_host], :port => WebistranoConfig[:ldap_port], :base => WebistranoConfig[:ldap_base], :auth => auth\n
 		filter = Net::LDAP::Filter.eq('cn', login)\n
 		ldap_entry = ldap.search(:filter => filter).first\n
 		return ldap_entry\n
 	end\n
 	def ldap_authenticated?(password)\n
-		ldap = Net::LDAP.new  :host => WebistranoConfig[:ldap_host], :port => WebistranoConfig[:ldap_port], :base => WebistranoConfig[:ldap_base]\n
+		auth = { :method =>  WebistranoConfig[:ldap_method], :username =>  WebistranoConfig[:ldap_username], :password =>  WebistranoConfig[:ldap_password] }\n		
+		ldap = Net::LDAP.new  :host => WebistranoConfig[:ldap_host], :port => WebistranoConfig[:ldap_port], :base => WebistranoConfig[:ldap_base],:auth => auth\n
 		ldap_entry = User.retrieve_from_ldap(ldap_cn)\n
 		dn=ldap_entry.dn\n
 		ldap.auth(dn,password)\n
 		ldap.bind\n
 	end\n
 	def self.ldap_users\n
-		ldap = Net::LDAP.new  :host => WebistranoConfig[:ldap_host], :port => WebistranoConfig[:ldap_port], :base => WebistranoConfig[:ldap_base]\n
+		auth = { :method =>  WebistranoConfig[:ldap_method], :username =>  WebistranoConfig[:ldap_username], :password =>  WebistranoConfig[:ldap_password] }\n
+		ldap = Net::LDAP.new  :host => WebistranoConfig[:ldap_host], :port => WebistranoConfig[:ldap_port], :base => WebistranoConfig[:ldap_base], :auth => auth\n
 		entries = ldap.search()\n
 		entries.delete_if{|u| u[:cn] == []}\n
 		return entries\n
 	end\n
 	def self.ldap_email(ldap_cn)\n
-		ldap = Net::LDAP.new  :host => WebistranoConfig[:ldap_host], :port => WebistranoConfig[:ldap_port], :base => WebistranoConfig[:ldap_base]\n
+		auth = { :method =>  WebistranoConfig[:ldap_method], :username =>  WebistranoConfig[:ldap_username], :password =>  WebistranoConfig[:ldap_password] }\n
+		ldap = Net::LDAP.new  :host => WebistranoConfig[:ldap_host], :port => WebistranoConfig[:ldap_port], :base => WebistranoConfig[:ldap_base], :auth => auth\n
 		filter = Net::LDAP::Filter.eq('cn', ldap_cn)\n
 		ldap_entry = ldap.search(:filter => filter).first\n
 		return ldap_entry[:mail].to_s\n
@@ -79,7 +83,10 @@ class LdapUsersExtensionsGenerator < Rails::Generator::Base
 		"#{match}\n 
 		:ldap_host => \"192.168.0.5\",\n
 		:ldap_port => 389,\n
-		:ldap_base => \"ou=people,dc=example,dc=com\",\n"
+		:ldap_base => \"ou=people,dc=example,dc=com\",\n
+		:ldap_method => :simple, \#either :simple or :anonymous. If you choose :anonymous then you can keep username/password empty ''\n
+	  	:ldap_username =>'cn=admin,dc=exampl,dc=com',\n 
+	  	:ldap_password =>'password',\n"
 	end	
   		
       
