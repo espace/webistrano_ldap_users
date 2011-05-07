@@ -11,6 +11,11 @@ What the plugin basically does is:
 
 After installing the plugin:
 ============================
+- You need to have net-ldap gem installed. If it is not installed run the follwoing command:
+	>> gem install net-ldap
+or
+	>> sudo gem install net-ldap
+
 - run the generate command, accept whenever prompted for overwriting existing files:
 
 	>> ruby script/generate ldap_users_extensions
