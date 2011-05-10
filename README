@@ -28,7 +28,7 @@ or
 
 	>>vi config/webistrano_config.rb
 
-and set the follwing 6 parameters by your LDAP server corresponding values:
+and set the follwing 8 parameters by your LDAP server corresponding values:
 
 	  :ldap_host => "192.168.0.5",
 	  :ldap_port => 389,
@@ -36,6 +36,8 @@ and set the follwing 6 parameters by your LDAP server corresponding values:
 	  :ldap_method => :simple, #either :simple or :anonymous. If you choose :anonymous then you can keep username/password empty ''
 	  :ldap_username =>'cn=admin,dc=exampl,dc=com' ,
 	  :ldap_password =>'password',
+	  :ldap_filter_attr => 'objectclass', #any ldap entry attribute
+	  :ldap_filter_value => 'person', #the value of the attribute to be filtered on 
 
 
 

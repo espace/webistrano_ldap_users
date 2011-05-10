@@ -32,8 +32,9 @@ class LdapUsersExtensionsGenerator < Rails::Generator::Base
 	def self.ldap_users\n
 		auth = { :method =>  WebistranoConfig[:ldap_method], :username =>  WebistranoConfig[:ldap_username], :password =>  WebistranoConfig[:ldap_password] }\n
 		ldap = Net::LDAP.new  :host => WebistranoConfig[:ldap_host], :port => WebistranoConfig[:ldap_port], :base => WebistranoConfig[:ldap_base], :auth => auth\n
-		entries = ldap.search()\n
-		entries.delete_if{|u| u[:cn] == []}\n
+		filter = Net::LDAP::Filter.eq(WebistranoConfig[:ldap_filter_attr], WebistranoConfig[:ldap_filter_value] )\n
+		entries = ldap.search(:filter => filter)\n
+		entries.delete_if{|u| u[:cn] == [] || u[:mail] == []}\n
 		return entries\n
 	end\n
 	def self.ldap_email(ldap_cn)\n
@@ -45,9 +46,10 @@ class LdapUsersExtensionsGenerator < Rails::Generator::Base
 	end\n
 	def normalize\n
 		if self.login.blank?\n
-			self.login = self.ldap_cn\n
+			self.login = User.ldap_email(self.ldap_cn)\n
 			self.email = User.ldap_email(self.ldap_cn)\n
 			if(self.email.blank?)\n
+				self.login = self.ldap_cn\n				
 				self.email = \"\#{self.login}@empty.com\"\n
 			end\n 
 			self.password = '----'\n
@@ -86,7 +88,9 @@ class LdapUsersExtensionsGenerator < Rails::Generator::Base
 		:ldap_base => \"ou=people,dc=example,dc=com\",\n
 		:ldap_method => :simple, \#either :simple or :anonymous. If you choose :anonymous then you can keep username/password empty ''\n
 	  	:ldap_username =>'cn=admin,dc=exampl,dc=com',\n 
-	  	:ldap_password =>'password',\n"
+	  	:ldap_password =>'password',
+		:ldap_filter_attr => 'objectclass', \#any ldap entry attribute\n
+		:ldap_filter_value => 'person',\#the value of the attribute to be filtered on\n" 
 	end	
   		
       
